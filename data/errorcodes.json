@@ -1,0 +1,15 @@
+{
+    "404": "Not Found",
+    "403": "Forbidden",
+    "401": "Unauthorized",
+    "400": "Bad Request",
+    "405": "Method Not Allowed",
+    "402": "Payment Required",
+    "410": "Gone",
+    "429": "Too Many Requests",
+    "418": "I'm a Teapot",
+    "500": "Internal Server Error",
+    "501": "Method Unsupported",
+    "502": "Bad Gateway",
+    "503": "Service Unavailable"
+}

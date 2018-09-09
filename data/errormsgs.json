@@ -1,0 +1,15 @@
+{
+    "404": "We couldn't find the thing you were asking for. Sorry.",
+    "403": "You don't have permission to access this! Back off!",
+    "401": "Authenticate before trying to touch this!",
+    "405": "Uh, please don't do that.",
+    "402": "You should give me money before trying this.",
+    "410": "You tried accessing something that existed.<br><br><br><br><br><br>Well, at least it <a class=\"stealth\" href=\"https://www.youtube.com/watch?v=al1BNB8bKaE\">used to exist.</a>",
+    "500": "Whoops~! Something went very very wrong on our side! Please report this to the developer!",
+    "400": "The thing you were trying to do is invalid!",
+    "418": "I'm a little teapot, short and stout.<br>Tip me over and pour me out.",
+    "429": "Uh oh, you just got RATELIMITED!!!",
+    "502": "Bad gateway. Bad.",
+    "501": "We don't support this yet. Embarrassing. I know.",
+    "503": "We're down! Try again later."
+}

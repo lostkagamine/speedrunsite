@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css?family=Exo|Noto+Sans|Roboto|Ubuntu|Roboto+Mono');
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+  
+.app {
+    min-height: 100%;
+    margin-bottom: -100px;
+    background: #36393F;
+    color: #EEEEEE;
+}
+
+.headfont {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.textfont {
+    font-family: 'Noto Sans', sans-serif;
+}
+
+h2 {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+p {
+    font-family: 'Noto Sans', sans-serif;
+}
+
+code {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.big {
+    font-size: 20px;
+}
+
+.verybig {
+    font-size: 40px;
+}
+
+.veryverybig {
+    font-size: 100px;
+    padding: 0;
+}
+
+.btn {
+    font-family: 'Roboto', sans-serif;
+}
+
+.footer {
+    background: #23272A;
+    color: #EEEEEE;
+    padding: 10px;
+    height: 100px;
+    text-align: center;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.centerdiv {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+.noalign {
+    text-align: left !important;
+}
+
+.flexbox {
+    display: flex;
+    flex-direction: row !important;
+    align-items: start;
+    align-content: start;
+    justify-content: start;
+}
+
+.spacing {
+    margin: 20px;
+}
+
+a.stealth {
+    text-decoration: none;
+    color: #EEEEEE;
+}
+
+#login {
+    width: 300px;
+}

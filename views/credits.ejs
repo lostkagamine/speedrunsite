@@ -1,0 +1,21 @@
+<%- include('header') -%>
+
+<div class="centerdiv">
+    <h2>So, who made this thing!?</h2>
+    <p class="big">
+        Glad you asked.<br>
+        This, uh, thing, was built by <a href="https://github.com/ry00001">ry00001</a>.<br>
+        She, apparently, knows enough node.js to make a website. Woo.<br>
+        It looks nice mostly because of <a href="https://github.com/noud02">noud02</a>, <a href="https://github.com/sr229">Enra</a> and <a href="https://github.com/queer">amy</a>.<br>
+        This entire thing really couldn't have been possible without <a href="https://expressjs.com">the people who made Express</a>.<br>
+        To actually write the web pages, <a href="http://www.embeddedjs.com">EJS</a> is used.<br>
+        <ul>
+            <li><code class="big">npm packages (version in brackets): </code></li>
+            <% for (let i of Object.keys(packages)) { %>
+                <li><code class="big"><%= i %> (<%= packages[i] %>)</code></li>
+            <% } %>
+        </ul>
+    </p>
+</div>
+
+<%- include('footer') -%>
