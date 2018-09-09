@@ -1,0 +1,33 @@
+<%- include('header') -%>
+
+<script src="/js/submissions.js"></script>
+
+<div class="centerdiv">
+    <p class="verybig">Hello, <%= user.username %>. What would you like to submit?</p>
+    <form class="col s12" method="GET" action="/api/submit">
+        <div class="input-field col s12 white-text verywide">
+            <select id="game" name="game">
+                <option value="" selected disabled></option>
+                <%# EJS to the rescue !!!! %>
+                <% for (let i=0; i<games.length; i++) { %>
+                    <option value="<%= i %>"><%= games[i].name %></option>
+                <% } %>
+            </select>
+            <label for="game">Game</label>
+        </div>
+        <div class="input-field col s12 white-text">
+            <input id="time" type="text" name="time">
+            <label for="time">Time (mm:ss)</label>
+        </div>
+        <button class="btn waves-effect waves-light red widebtn" type="submit" name="action">Submit!
+            <i class="material-icons right">arrow_forward</i>
+        </button>
+    </form>
+    <% if (success) { %>
+        <div class="success verywide tall">
+            <p class="big eeeeee">Success, your run has been submitted.</p>
+        </div>
+    <% } %>
+</div>
+
+<%- include('footer') -%>
