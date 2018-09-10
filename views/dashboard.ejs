@@ -1,0 +1,15 @@
+<%- include('header') -%>
+
+<div class="center-noflex">
+    <div class="plsplsplswork"> <!-- dear god i hate css -->
+        <span class="verybig plsplsplswork"><%= user.username %>
+            <% for (let i of tags) { %>
+                <span class="tag" style="color: <%= i.color %>; background-color: <%= i.background %>"><%= i.text %></span>
+            <% } %>
+        </span>
+    </div>
+    <br><br>
+    <a href="/submit" class="btn waves-effect waves-light red widebtn">Submit a speedrun</a>
+</div>
+
+<%- include('footer') -%>

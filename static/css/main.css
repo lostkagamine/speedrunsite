@@ -81,6 +81,34 @@ code {
     justify-content: start;
 }
 
+.flexbox-middle {
+    display: flex;
+    flex-direction: row !important;
+    align-items: middle;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+}
+
+.center-noflex {
+    text-align: center;
+    margin: auto;
+}
+
+.plsplsplswork {
+    vertical-align: middle;
+    height: 50px;
+}
+
+.tag {
+    padding: 5px;
+    margin: 0;
+    border-radius: 5px;
+    font-size: 15px;
+    border-radius: 10px;
+    vertical-align: middle;
+}
+
 .spacing {
     margin: 20px;
 }
@@ -107,6 +135,10 @@ a.stealth {
 }
 
 .success {
-    border: #33CC33 3px;
+    border: #33CC33 3px solid;
     border-radius: 2px;
+}
+
+.nobr {
+    white-space: nowrap
 }

@@ -5,19 +5,30 @@ const querystring = require('querystring');
 const crypto = require('crypto');
 const superagent = require('superagent');
 const session = require('express-session');
+const Redite = require('redite');
 const eris = require('eris');
 const games = require('./games.json');
+const tags = require('./data/tags.json');
+const bodyParser = require('body-parser');
 const httpErrors = {
     codes: require('./data/errorcodes.json'),
     messages: require('./data/errormsgs.json')
 }
 const API_ROOT = 'https://discordapp.com/api/v6'
 
+const redisDataModel = {
+    permissions: [],
+    runs: []
+}
+
+var redis; // DONT TOUCH THIS
 const app = express();
 const bot = new eris(config.bot.token);
 
 app.set('view engine', 'ejs') // use ejs
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('static')) // set up static memes
 
 const renderHTTPError = (req, res, status) => {
@@ -27,6 +38,10 @@ const renderHTTPError = (req, res, status) => {
         meaning: httpErrors.codes[strs],
         errmsg: httpErrors.messages[strs]
     })
+}
+
+const randomID = length => {
+    return crypto.randomBytes(length).toString('hex');
 }
 
 var sess = {
@@ -48,8 +63,8 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/auth', async (req, res) => {
-    let thing = crypto.randomBytes(20);
-    let state = thing.toString('hex');
+    let state = randomID(20);
+    req.session.state = state;
     let query = querystring.stringify({
         client_id: config.oauth.id,
         redirect_uri: config.oauth.redir,
@@ -73,14 +88,31 @@ app.get('/auth/callback', async (req, res) => {
     let headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
+    if (req.query.state !== req.session.state) return renderHTTPError(req, res, 400); // die if states don't match
+    req.session.state = null;
     try {
         let ret = await superagent.post(`${API_ROOT}/oauth2/token`).send(data).set(headers).auth(config.oauth.id, config.oauth.secret);
         let token = ret.body.token_type + ' ' + ret.body.access_token;
         req.session.tokenData = ret.body;
         req.session.token = token;
         let userRes = await superagent.get(`${API_ROOT}/users/@me`).set({'Authorization': token});
-        req.session.user = userRes.body;
-        res.redirect('/hello')
+        let user = userRes.body;
+        req.session.user = user;
+        if (!await redis[user.id]()) {
+            await redis[user.id].set(redisDataModel)
+        } else {
+            // it is set, go check
+            let doSet = false;
+            let data = await redis[user.id]();
+            for (let i of Object.keys(redisDataModel)) {
+                if (!data[i]) {
+                    data[i] = redisDataModel[i]; // performance coding
+                    doSet = true;
+                }
+            }
+            if (doSet) await redis[user.id].set(data);
+        }
+        res.redirect('/dashboard')
     } catch(e) {
         res.render('error', {
             msg: 'Error while retrieving user token.',
@@ -89,9 +121,21 @@ app.get('/auth/callback', async (req, res) => {
     }
 })
 
-app.get('/hello', async (req, res) => {
-    res.render('welcome', {
-        user: req.session.user
+app.get('/dashboard', async (req, res) => {
+    if (!req.session.user) res.redirect('/auth');
+    try {
+        let tempuser = await superagent.get(`${API_ROOT}/users/@me`).set({'Authorization': req.session.token});
+        req.session.user = tempuser.body;
+    } catch(e) {
+        res.redirect('/auth')
+    }
+    let meme = await redis[req.session.user.id]();
+    console.log(meme);
+    let perms = meme.permissions;
+    let ejstags = perms.map(a => tags[a])
+    res.render('dashboard', {
+        user: req.session.user,
+        tags: ejstags
     })
 })
 
@@ -119,7 +163,7 @@ app.get('/submit', async (req, res) => {
     })
 })
 
-app.get('/api/submit', async (req, res) => {
+app.post('/api/submit', async (req, res) => {
     if (!req.session.user) renderHTTPError(req, res, 401);
     try {
         let tempuser = await superagent.get(`${API_ROOT}/users/@me`).set({'Authorization': req.session.token});
@@ -127,9 +171,10 @@ app.get('/api/submit', async (req, res) => {
     } catch(e) {
         renderHTTPError(req, res, 401) // die if token badde:tm:
     }
-    if (!req.query.game || !req.query.time) renderHTTPError(req, res, 400)
-    let game = games[req.query.game]
-    if (!game) renderHTTPError(req, res, 400)
+    console.log(req.body);
+    if (!req.body.game || !req.body.time || !req.body.video) res.status(400).send({error: 'missing game, time or video'})
+    let game = games[req.body.game]
+    if (!game) res.status(400).send({error: 'invalid game'})
     await bot.createMessage(config.bot.runChannel, `<@&${config.bot.runRole}> new run by <@${req.session.user.id}> (${req.session.user.username}#${req.session.user.discriminator})\nGame: ${game.name} (${game.short})\nTime: ${req.query.time}`)
     res.redirect('/submit?success=true');
 })
@@ -155,12 +200,20 @@ app.use(
     }
 )
 
-app.listen(config.express.port, () => {
-    console.log('express is a go')
-})
+try {
+    redis = new Redite(config.redis.url);
+    console.log('Redis is a go');
+} catch(e) {
+    console.error('Redis init failed. '+e);
+    process.exit(1);
+}
 
 bot.on('ready', () => {
     console.log(`Discord ready as ${bot.user.username}#${bot.user.discriminator} (${bot.user.id})`)
+})
+
+app.listen(config.express.port, () => {
+    console.log('express is a go')
 })
 
 bot.connect();

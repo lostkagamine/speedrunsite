@@ -1,0 +1,12 @@
+{
+    "dev": {
+        "text": "Dev-chan",
+        "background": "00CCCC",
+        "color": "000000"
+    },
+    "mod": {
+        "text": "Mod",
+        "background": "7289DA",
+        "color": "000000"
+    }
+}

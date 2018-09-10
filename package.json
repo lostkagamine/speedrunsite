@@ -9,11 +9,13 @@
   "author": "ry00001",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
     "eris": "^0.9.0",
     "express": "^4.16.3",
     "express-async-errors": "^3.0.0",
     "express-session": "^1.15.6",
+    "redite": "^2.0.1",
     "superagent": "^3.8.3"
   }
 }
