@@ -175,10 +175,23 @@ app.post('/api/submit', async (req, res) => {
         return renderHTTPError(req, res, 401) // die if token badde:tm:
     }
     console.log(req.body);
-    if (!req.body.game || !req.body.time || !req.body.video) res.status(400).send({error: 'missing game, time or video'})
+    if (!req.body.game || !req.body.time || !req.body.video) return res.status(400).send({error: 'missing game, time or video'})
+    if (!/(?:https?:\/\/)(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9=]+)/gm.test(req.body.video)) {
+        return res.status(400).send({error: 'bad video (must be on youtube)'})
+    }
+    if (!/(?:(\d{2,}):)?(\d{2,}):(\d{2,})(?:\.(\d{1,}))?/.test(req.body.time)) {
+        return res.status(400).send({error: 'bad time (must be hh:mm:ss.ms)'})
+    }
     let game = games[req.body.game]
-    if (!game) res.status(400).send({error: 'invalid game'})
+    if (!game) return res.status(400).send({error: 'invalid game'})
     await bot.createMessage(config.bot.runChannel, `<@&${config.bot.runRole}> new run by <@${req.session.user.id}> (${req.session.user.username}#${req.session.user.discriminator})\nGame: ${game.name} (${game.short})\nTime: ${req.query.time}`)
+    let meme = await redis[req.session.user.id]();
+    meme.runs.push({
+        game,
+        video: req.body.video,
+        time: req.body.time
+    })
+    await redis[req.session.user.id].set(meme);
     res.redirect('/submit?success=true');
 })
 
@@ -196,10 +209,11 @@ app.get('/users/:userId', async (req, res) => {
     let meme = await redis[user.id]();
     if (!meme) return renderHTTPError(req, res, 400)
     let perms = meme.permissions || [];
-    let ejstags = perms.map(a => tags[a])
+    let ejstags = perms.map(a => tags[a]);
     res.render('userPage', {
         user,
-        tags: ejstags
+        tags: ejstags,
+        runs: meme.runs
     })
 })
 

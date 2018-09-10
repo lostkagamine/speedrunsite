@@ -8,6 +8,16 @@
             <% } %>
         </span>
     </div>
+    <p class="big headtext">User's runs:</p>
+    <ul>
+        <% if (runs.length === 0) { %>
+            <li class="big">We've come up empty!</li>
+        <% } else { %>
+            <% for (let i of runs) { %>
+                <li class="big"><a href="<%= i.video %>"><%= i.game.name %> in <%= i.time %></a></li>
+            <% } %>
+        <% } %>
+    </ul>
 </div>
 
 <%- include('footer') -%>
