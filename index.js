@@ -40,6 +40,7 @@ const renderHTTPError = (req, res, status) => {
         meaning: httpErrors.codes[strs],
         errmsg: httpErrors.messages[strs]
     })
+    res.end();
 }
 
 const randomID = length => {
@@ -156,7 +157,7 @@ app.get('/submit', async (req, res) => {
         res.redirect('/auth') // reauthorize if token badde:tm:
     }
     if (config.bannedUsers.includes(req.session.user.id)) {
-        renderHTTPError(req, res, 403)
+        return renderHTTPError(req, res, 403)
     }
     res.render('submit', {
         user: req.session.user,
@@ -166,12 +167,12 @@ app.get('/submit', async (req, res) => {
 })
 
 app.post('/api/submit', async (req, res) => {
-    if (!req.session.user) renderHTTPError(req, res, 401);
+    if (!req.session.user) return renderHTTPError(req, res, 401);
     try {
         let tempuser = await superagent.get(`${API_ROOT}/users/@me`).set({'Authorization': req.session.token});
         req.session.user = tempuser.body;
     } catch(e) {
-        renderHTTPError(req, res, 401) // die if token badde:tm:
+        return renderHTTPError(req, res, 401) // die if token badde:tm:
     }
     console.log(req.body);
     if (!req.body.game || !req.body.time || !req.body.video) res.status(400).send({error: 'missing game, time or video'})
@@ -183,16 +184,17 @@ app.post('/api/submit', async (req, res) => {
 
 app.get('/users/:userId', async (req, res) => {
     if (!req.params.userId) {
-        renderHTTPError(req, res, 400)
+        return renderHTTPError(req, res, 400)
     }
     let user;
     try {
         user = await bot.getRESTUser(req.params.userId)
     } catch(e) {
-        renderHTTPError(req, res, 400)
+        return renderHTTPError(req, res, 400)
     }
+    if (!user) return renderHTTPError(req, res, 400)
     let meme = await redis[user.id]();
-    if (!meme) renderHTTPError(req, res, 400)
+    if (!meme) return renderHTTPError(req, res, 400)
     let perms = meme.permissions || [];
     let ejstags = perms.map(a => tags[a])
     res.render('userPage', {
@@ -206,11 +208,11 @@ app.get('/error', async (req, res) => {
 })
 
 app.get('/error/http', async (req, res) => {
-    renderHTTPError(req, res, parseInt(req.query.error) || 500)
+    return renderHTTPError(req, res, parseInt(req.query.error) || 500)
 })
 
 app.get('*', async (req, res) => {
-    renderHTTPError(req, res, 404);
+    return renderHTTPError(req, res, 404);
 })
 
 app.use(
