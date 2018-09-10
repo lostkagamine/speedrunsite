@@ -23,7 +23,9 @@ const redisDataModel = {
 
 var redis; // DONT TOUCH THIS
 const app = express();
-const bot = new eris(config.bot.token);
+const bot = new eris(`Bot ${config.bot.token}`, {
+    restMode: true
+});
 
 app.set('view engine', 'ejs') // use ejs
 
@@ -131,7 +133,7 @@ app.get('/dashboard', async (req, res) => {
     }
     let meme = await redis[req.session.user.id]();
     console.log(meme);
-    let perms = meme.permissions;
+    let perms = meme.permissions || [];
     let ejstags = perms.map(a => tags[a])
     res.render('dashboard', {
         user: req.session.user,
@@ -177,6 +179,26 @@ app.post('/api/submit', async (req, res) => {
     if (!game) res.status(400).send({error: 'invalid game'})
     await bot.createMessage(config.bot.runChannel, `<@&${config.bot.runRole}> new run by <@${req.session.user.id}> (${req.session.user.username}#${req.session.user.discriminator})\nGame: ${game.name} (${game.short})\nTime: ${req.query.time}`)
     res.redirect('/submit?success=true');
+})
+
+app.get('/users/:userId', async (req, res) => {
+    if (!req.params.userId) {
+        renderHTTPError(req, res, 400)
+    }
+    let user;
+    try {
+        user = await bot.getRESTUser(req.params.userId)
+    } catch(e) {
+        renderHTTPError(req, res, 400)
+    }
+    let meme = await redis[user.id]();
+    if (!meme) renderHTTPError(req, res, 400)
+    let perms = meme.permissions || [];
+    let ejstags = perms.map(a => tags[a])
+    res.render('userPage', {
+        user,
+        tags: ejstags
+    })
 })
 
 app.get('/error', async (req, res) => {
