@@ -3,7 +3,12 @@
 <div class="centerdiv">
     <h2>Welcome to the very good speedrun portal</h1>
     <p>This is stupidity by ry00001 so don't expect it to work thanks</p>
-    <a href="/auth" class="btn waves-effect waves-light red widebtn">Login with Discord</a>
+    <% if (!user) { %>
+        <a href="/auth" class="btn waves-effect waves-light red widebtn">Login with Discord</a>
+    <% } else { %>
+        <p class="big">You are logged in as <%= user.username %></p>
+        <a href="/dashboard" class="btn waves-effect waves-light red widebtn">Go to your dashboard</a>
+    <% } %>
 </div>
 
 <%- include('footer') -%>

@@ -137,8 +137,32 @@ a.stealth {
 .success {
     border: #33CC33 3px solid;
     border-radius: 2px;
+    padding: 10px;
 }
 
 .nobr {
     white-space: nowrap
+}
+
+.header {
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #23272A;
+    position: fixed;
+    width: 100%;
+    margin-bottom: 10px;
+    height: 50px;
+    top: 0px;
+    vertical-align: middle !important;
+}
+
+.header-content {
+    align-items: middle !important;
+    align-content: middle !important;
+    text-align: middle !important;
+    justify-content: middle !important;
+    vertical-align: middle !important;
+    margin-bottom: auto;
+    margin-top: auto;
+    height: 50px;
 }

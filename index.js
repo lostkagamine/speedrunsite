@@ -62,7 +62,9 @@ if (app.get('env') === 'production') {
 app.use(session(sess))
 
 app.get('/', async (req, res) => {
-    res.render('index');
+    res.render('index', {
+        user: req.session.user || undefined
+    });
 })
 
 app.get('/auth', async (req, res) => {

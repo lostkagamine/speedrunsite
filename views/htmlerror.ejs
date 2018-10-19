@@ -2,9 +2,9 @@
 
 <div class="centerdiv">
     <div class="flexbox">
-        <span class="veryverybig headfont spacing"><%- errno -%> <span class="verybig headfont"><%- meaning -%></span></span><br>
+        <span class="veryverybig headfont spacing"><%- errno || "???" -%> <span class="verybig headfont"><%- meaning || "Unknown" -%></span></span><br>
     </div>
-    <p class="big"><%- errmsg -%></p>
+    <p class="big"><%- errmsg || "Oops! I don't know about this one! Your best bet is to tell the developer." -%></p>
 </div>
 
 <%- include('footer') -%>
